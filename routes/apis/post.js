@@ -1,30 +1,12 @@
 const express = require('express');
-const router = express.Router();
 //------------------------------------------------------------
-const Post = require('../../models/post');
-const {createPostValid} = require('../../validator/index');
-//----------------------POST-----------------
-router.get('/', (req,res, next)  => {
-    const posts = Post.find()
-       .select("_id title body")
-       .then((posts) => {
-        res.status(200).json({posts});
-    })
-    .catch(err=> console.log(err));
-});
+const validator = require('../../validator');
+const {getPosts, createPost} = require('../../controllers/post');
+const router = express.Router();
+//--------------------------------------------
+router.get('/', getPosts);
 //---------------ADD-------------------------------------------
-router.post('/add', createPostValid, (req,res,next) => {
-    const post = new Post(req.body  );
-    post.save()
-    .then(result=> {
-        res.status(200).json({ 
-            post:result
-        })
-    })
-    .catch(err=>console.log(err));
-})
-
-//----------------UPDATE-----------------------------------------
+router.post('/add', validator.createPostValid, createPost);
 
 
 module.exports = router;
