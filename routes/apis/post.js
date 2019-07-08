@@ -1,12 +1,15 @@
 const express = require('express');
 //------------------------------------------------------------
 const validator = require('../../validator');
-const {getPosts, createPost} = require('../../controllers/post');
+const {getPosts, createPost, updatePost,deletePost} = require('../../controllers/post');
 const router = express.Router();
 //--------------------------------------------
 router.get('/', getPosts);
-//---------------ADD-------------------------------------------
+//-------------------------------------------------------
 router.post('/add', validator.createPostValid, createPost);
-
+//-------------------------------------------------
+router.put('/update/:id', updatePost);
+//--------------------------------------------------------
+router.delete('/delete/:id', deletePost);
 
 module.exports = router;
