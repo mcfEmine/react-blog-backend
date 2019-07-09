@@ -25,7 +25,7 @@ exports.login = (req, res) => {
             if(isMatch) {
                 const token = jwt.sign({
                       type: "user",
-                      data : {
+                      data : {         // payload data  verify signature HMACSHA256
                           _id: user._id,
                           username : user.username,
                           name: user.name,
