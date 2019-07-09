@@ -34,7 +34,7 @@ UserSchema.plugin(uniqueValidator);
 module.exports.getUserById = function(id, callback) {
     User.findById(id, callback);
 }
-module.exports.getUserByName = function(username, callback) {
+module.exports.getUserByUserName = function(username, callback) {
     const query = {
         username: username
     }

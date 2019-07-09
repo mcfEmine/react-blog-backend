@@ -1,4 +1,4 @@
 module.exports = {
-    database:'mongodb://heroku_44nlstbl:Efb_4962@ds259806.mlab.com:59806/mynode',
+    database:'mongodb://rapsodo:rapsodo_1234@ds235947.mlab.com:35947/heroku_44nlstbl',
     secret:'1234567'
 }

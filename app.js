@@ -45,7 +45,11 @@ app.get('/', (req,res) => {
 });
 //---------------------------------------------------------------------------------------------
 const postRoutes = require('./routes/apis/post');
+const userRoutes = require('./routes/apis/auth');
+
 app.use('/api/posts', postRoutes);
+app.use('/api/auth', userRoutes);
+
 //---------------------------------------------------------------------------------------------
 app.listen(port, () => {
     console.log('server started on port', port)
