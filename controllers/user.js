@@ -15,7 +15,7 @@ exports.userById = (req, res, next, id ) => {
 
 exports.getAllUsers = (req, res) => {
     const user = User.find()
-       .select("_id name email username password contact")
+       .select("_id name email username contact")
        .then((users) => {
         res.status(200).json({users});
     })
@@ -24,6 +24,7 @@ exports.getAllUsers = (req, res) => {
 
 // 
 exports.getUser = (req, res) => {
+    req.password=undefined;
     return res.json(req.profile);
 }
 //

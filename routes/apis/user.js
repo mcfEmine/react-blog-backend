@@ -4,8 +4,6 @@ const passport = require('passport');
 
 const {userById, getAllUsers, getUser, updateUser, deleteUser} = require('../../controllers/user');
 
-
-
 router.get('/users', getAllUsers); // tüm userları getirir
 router.get('/user/:userId', passport.authenticate('jwt', {session:false}), getUser);
 router.put('/user/:userId', passport.authenticate('jwt', {session:false}), updateUser);

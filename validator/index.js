@@ -1,11 +1,11 @@
 module.exports.createPostValid= (req,res, next) => {
-    req.check("title", "Baslik bos olamaz!").notEmpty();
+    req.check("title", "Baslik girilmelidir!").notEmpty();
     req.check("title", "Baslik 4-150 karakter arasinda olmalı!").isLength({
         min:4,
         max:150
     });
 
-    req.check("body", "Metin bos olamaz!").notEmpty();
+    req.check("body", "Metin girilmeldir!").notEmpty();
     req.check("body", "Metin 4-2000 karakter arasinda olmalı!").isLength({
         min:4,
         max:2000
