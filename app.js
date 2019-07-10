@@ -6,6 +6,8 @@ const morgan = require('morgan');
 const cors = require ('cors'); // course model
 const passport = require('passport');
 const path = require('path');
+
+
 //--------------------------------------------------
 const app = express(); // initialize the app
 //-------------------------------------------------------------------------------------------
@@ -31,24 +33,31 @@ mongoose.connect(db, {useNewUrlParser:true})
     });
 //------------------------------defining the port-----------------------------------------------
 const port=process.env.PORT || 8080;  
+
 //---------------------------initialize public directory-------------------------------------
 // app.get('*', (req,res) => {
 //     res.sendFile(path.join(__dirname, 'public/index.html'));
 // })
 //----------------------------------static folder--------------------------------------
 app.use(express.static(path.join(__dirname,'public')));
+ 
+
 //----------------------------------
 app.get('/', (req,res) => {
     return res.json({
         message:"emine node js hoşgeldin"
     })
 });
+
+require('./config/passport')(passport);
 //---------------------------------------------------------------------------------------------
 const postRoutes = require('./routes/apis/post');
-const userRoutes = require('./routes/apis/auth');
+const userRoutes = require('./routes/apis/user');
+const authRoutes = require('./routes/apis/auth');
 
-app.use('/api/posts', postRoutes);
-app.use('/api/auth', userRoutes);
+app.use('/', authRoutes);
+app.use('/', userRoutes);
+app.use('/', postRoutes);
 
 //---------------------------------------------------------------------------------------------
 app.listen(port, () => {

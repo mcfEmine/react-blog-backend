@@ -2,7 +2,8 @@ const User = require('../models/user');
 const jwt =require('jsonwebtoken');
 const config = require('../config/db')
 const passport = require('passport');
-//-------------------------------------------
+
+//------------------------------------LOGIN-----------------------------------------
 exports.login = (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
@@ -51,7 +52,8 @@ exports.login = (req, res) => {
 
 });
 }
-//-------------------------------------------
+//----------------------------------SIGN UP----------------------------------------------------
+
 exports.registerProfile = (req, res) => {
     let newUser = new User(req.body);
     User.addUser(newUser, (err, user) => {
@@ -71,24 +73,4 @@ exports.registerProfile = (req, res) => {
     }
 });
 };
-//---------------------------------------
-exports.getProfile = (req, res) => {
-    const user = User.find()
-       .select("_id name email username password contact")
-       .then((users) => {
-        res.status(200).json({users});
-    })
-    .catch(err=> console.log(err));
-};
-//-------------------------------------------
-exports.deleteUser = (req, res) => {
-    const id=req.params.id;
-    User.findById(id).then(user=> {
-        user.delete().then(user=> {
-                res.send({message: 'User delete success', status: 'OK', user:user}) 
-            })
-            .catch(err=>console.log(err));
-          })
-          .catch(err=>console.log(err));
-       
-    };
+//-----------------------------------------------------------------

@@ -32,6 +32,7 @@ const User= module.exports = mongoose.model('User', UserSchema);
 UserSchema.plugin(uniqueValidator);
 //---------------------------------------------
 module.exports.getUserById = function(id, callback) {
+    
     User.findById(id, callback);
 }
 module.exports.getUserByUserName = function(username, callback) {
