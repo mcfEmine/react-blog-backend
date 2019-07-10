@@ -18,7 +18,6 @@ exports.login = (req, res) => {
                 message: "User mevcut değil!"
             });
         }
-
             // user exist!
            
         User.comparePassword(password, user.password, (err, isMatch) => {

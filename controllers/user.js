@@ -1,6 +1,19 @@
 const User = require('../models/user');
+const _ = require('lodash'); 
 //---------------------------------------
-exports.getUsers = (req, res) => {
+exports.userById = (req, res, next, id ) => {
+    User.findById(id).exec((err,user) => {
+        if(err || !user) {
+            return res.status(400).json({
+            error : "User bulunamadi"
+        })
+    }
+    req.profile = user
+    next();
+})
+};
+
+exports.getAllUsers = (req, res) => {
     const user = User.find()
        .select("_id name email username password contact")
        .then((users) => {
@@ -8,17 +21,36 @@ exports.getUsers = (req, res) => {
     })
     .catch(err=> console.log(err));
 };
-//-------------------------------------------
-exports.deleteUser = (req, res) => {
-    const id=req.params.id;
-    console.log("delete gelen id " , id);
-    User.findById(id).then(user=> {
-        user.delete().then(user=> {
-                res.send({message: 'User delete success', status: 'OK', user:user}) 
-            })
-            .catch(err=>console.log(err));
-          })
-          .catch(err=>console.log(err));
-       
-    };
 
+// 
+exports.getUser = (req, res) => {
+    return res.json(req.profile);
+}
+//
+exports.updateUser = (req, res, next) => {
+    let user = req.profile
+    user=_.extend(user, req.body)
+    user.update = Date.now()
+    user.save((err) => {
+        if(err) {
+            return res.json({
+                error: err
+            })
+        }
+        req.profile.password = undefined
+        res.json({user})
+    })
+    }
+
+//-------------------------------------------
+exports.deleteUser = (req, res, next) => {
+    let user  = req.profile;
+    user.remove((err) => {
+        if(err) {
+            return res.json({
+                error: err
+            })
+        }
+        res.json({message: "User başarıyla silindi!"})
+    })
+    }
