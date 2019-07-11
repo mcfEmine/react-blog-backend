@@ -13,15 +13,6 @@ exports.userById = (req, res, next, id ) => {
 })
 };
 
-exports.hasAuthorization = (req, res, next) => {
-    const authorized = req.profile && req.auth && req.profile._id === req.auth._id;
-    if(!authorized) {
-        return res.status(403).json({
-            error: "Kullanıcı yetkili değildir!"
-        })
-    }
-};
-
 exports.getAllUsers = (req, res) => {
     const user = User.find()
        .select("_id name email username contact")
