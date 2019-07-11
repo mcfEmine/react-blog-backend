@@ -50,6 +50,7 @@ app.get('/', (req,res) => {
 });
 
 require('./config/passport')(passport);
+
 //---------------------------------------------------------------------------------------------
 const postRoutes = require('./routes/apis/post');
 const userRoutes = require('./routes/apis/user');

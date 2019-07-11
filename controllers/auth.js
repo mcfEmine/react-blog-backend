@@ -38,7 +38,7 @@ exports.login = (req, res) => {
                     );
                     return res.json({
                         success : true,
-                        token : "JWT " + token 
+                        token : "JWT" + token 
                     });
                 } else {
                     return res.json({

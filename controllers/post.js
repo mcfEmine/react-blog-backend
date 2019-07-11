@@ -1,21 +1,9 @@
 const Post = require('../models/post');
 const formidable = require('formidable');
 const fileSystem = require('fs');
-
-   
-//--------------------------------------------------------------------------------------------------
-/*
- {
-            "_id": "5d25f332feb64a2cb8530afd",
-            "title": "my title",
-            "body": "my form body data",
-            "postedBy": {
-                "_id": "5d25eea0f8652d06885824df",
-                "name": "myuser"
-            }
-        },
-*/
-
+const _ = require('lodash'); 
+  
+//------------------------------------------------------------------------
 exports.postById = (req, res, next, id) => {
     Post.findById(id)
     .populate("postedBy", "_id name")
@@ -42,6 +30,8 @@ exports.getPosts = (req,res) => {
 exports.createPost = (req, res) => {
     let form = new formidable.IncomingForm()
     form.keepExtensions = true
+    const post = new Post(req.body);
+    
     form.parse(req, (err, fields, files) => {
         if(err) {
             return res.status(400).json({
@@ -65,8 +55,8 @@ exports.createPost = (req, res) => {
                res.json(result)
         })
     })
-    
 };
+
 //--------------------- --------------posted (user) by who?
 // succ _> posts
 // err handle
@@ -86,27 +76,7 @@ exports.postsByUser = (req, res)=> {
 
 }
 
-//----------------------------------------------------------------
 
-exports.isPoster = (req, res, next) => {
-    
-    console.log("req.post", req.post);
-    console.log("****************************************************************");
-
-    console.log("req.post.postedBy._id", req.post.postedBy._id);
-    console.log("****************************************************************");
-    console.log("req.JWT", req.jwt);
-    console.log("****************************************************************");
-
-    isPoster = false;
-    let isPoster = req.post;  
-    if(!isPoster) {
-        return res.status(403).json({
-            error: "User authorize değil!"
-        })
-    }
-    next();
-}
 //-------------------------------------------------------------------------
 exports.deletePost = (req, res) => {
     let post = req.post // delete post
@@ -124,16 +94,28 @@ exports.deletePost = (req, res) => {
 }
 //--------------------------------------------------------------
 exports.updatePost = (req,res) => {
-    let id=req.params.id;
-    Post.findById(id).then(post=> {
-        post.title = req.body.title;
-        post.body = req.body.body;
-        post.save().then(post=> {
-            res.send({
-                message: 'Post update success', status: 'OK', post:post})
-        })
-        .catch(err=>console.log(err));
-      })
-      .catch(err=>console.log(err));
+    let post = req.post;
+    post =_.extend(post, req.body)
+    post.updated = Date.now();
+    post.save(err => {
+        if(err) {
+            return res.status(400).json({
+                error: err
+            })
+        }
+        res.json(post);
+    })
    
 };
+//----------------------------------------------------------------
+    exports.isPoster = (req, res, next) => {
+    let isPoster = req.user._id.equals(req.post.postedBy._id);
+   // console.log("isPoster", isPoster);
+    if(!isPoster) {
+        return res.status(403).json({
+            error: "Yetkili değilsiniz!"
+        })
+    }
+
+    next();
+}
