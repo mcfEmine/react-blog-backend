@@ -1,0 +1,12 @@
+{
+    "/signup":  "Kayit olma işlemi",
+    "/signin" : "Login işlemi",
+    "/posts" : "Bütüm postları getirir",
+    "/posts/by/:userId" : "Kullanıcının postlarını getirir",
+    "/post/new/:userId" : "Kullanıcı post yaratır",
+    "/post/:postId" : "post update/delete",
+    "/users"        : "Tüm kullanıcıları getirir",
+    "/user/:userId" : "get/update/delete user"
+
+
+}
