@@ -15,7 +15,7 @@ const PostSchema  = new mongoose.Schema({
       default:Date.now
    },
    photo: {
-      type: Buffer, 
+      data: Buffer, 
       contenType: String
    },
    postedBy: {

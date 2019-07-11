@@ -16,6 +16,20 @@ const fileSystem = require('fs');
         },
 */
 
+exports.postById = (req, res, next, id) => {
+    Post.findById(id)
+    .populate("postedBy", "_id name")
+    .exec((err, post) => {
+        if(err || !post) {
+            return res.status(400).json({
+                error: err
+            })
+        }
+        req.post=post
+        next()
+    })
+}
+//-----------------------------------------------------------------------
 exports.getPosts = (req,res) => {
     const posts = Post.find().populate("postedBy", "_id name")
        .select("_id title body")
@@ -71,6 +85,43 @@ exports.postsByUser = (req, res)=> {
     })
 
 }
+
+//----------------------------------------------------------------
+
+exports.isPoster = (req, res, next) => {
+    
+    console.log("req.post", req.post);
+    console.log("****************************************************************");
+
+    console.log("req.post.postedBy._id", req.post.postedBy._id);
+    console.log("****************************************************************");
+    console.log("req.JWT", req.jwt);
+    console.log("****************************************************************");
+
+    isPoster = false;
+    let isPoster = req.post;  
+    if(!isPoster) {
+        return res.status(403).json({
+            error: "User authorize değil!"
+        })
+    }
+    next();
+}
+//-------------------------------------------------------------------------
+exports.deletePost = (req, res) => {
+    let post = req.post // delete post
+    post.remove((err, post)=> { 
+        if(err) {
+            return res.status(400).json({
+                error: err
+            })
+        }
+        res.json({
+            message: "Post silindi!"
+        })
+    })
+    
+}
 //--------------------------------------------------------------
 exports.updatePost = (req,res) => {
     let id=req.params.id;
@@ -86,17 +137,3 @@ exports.updatePost = (req,res) => {
       .catch(err=>console.log(err));
    
 };
-//-------------------------------------------------------------------------
-exports.deletePost = (req, res) => {
-    let id=req.params.id;
-    Post.findById(id).then(post=> {
-        post.delete().then(post=> {
-                res.send({message: 'Post delete success', status: 'OK', post:post}) 
-            })
-            .catch(err=>console.log(err));
-          })
-          .catch(err=>console.log(err));
-       
-    };
-
-
