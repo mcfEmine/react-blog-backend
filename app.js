@@ -6,7 +6,7 @@ const morgan = require('morgan');
 const cors = require ('cors'); // course model
 const passport = require('passport');
 const path = require('path');
-
+const fs = require('fs');
 
 //--------------------------------------------------
 const app = express(); // initialize the app
@@ -39,16 +39,8 @@ const port=process.env.PORT || 8080;
 //     res.sendFile(path.join(__dirname, 'public/index.html'));
 // })
 //----------------------------------static folder--------------------------------------
-app.use(express.static(path.join(__dirname,'public')));
- 
-
+//app.use(express.static(path.join(__dirname,'public')));
 //----------------------------------
-app.get('/', (req,res) => {
-    return res.json({
-        message:"emine node js hoşgeldin"
-    })
-});
-
 require('./config/passport')(passport);
 
 //---------------------------------------------------------------------------------------------
@@ -60,6 +52,18 @@ app.use('/', authRoutes);
 app.use('/', userRoutes);
 app.use('/', postRoutes);
 
+// Docs
+app.get('/', (req, res) => {
+    fs.readFile('docs/apiDocs.json', (err, data) => {
+        if(err) {
+            res.status(400).json({
+                error:err
+            })
+        }
+        const docs = JSON.parse(data)
+        res.json(docs)
+    })
+})
 //---------------------------------------------------------------------------------------------
 app.listen(port, () => {
     console.log('server started on port', port)
