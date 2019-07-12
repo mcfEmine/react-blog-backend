@@ -19,7 +19,7 @@ exports.getAllUsers = (req, res) => {
     const user = User.find()
        .select("_id name email username contact")
        .then((users) => {
-        res.status(200).json({users});
+        res.status(200).json(users);
     })
     .catch(err=> console.log(err));
 };
