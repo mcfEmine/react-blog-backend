@@ -7,7 +7,7 @@ exports.userById = (req, res, next, id ) => {
         
         if(err || !user) {
             return res.status(400).json({
-            error : "User bulunamadi"
+            error : "User mevcut değil!"
         })
     }
     req.profile = user

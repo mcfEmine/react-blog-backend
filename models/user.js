@@ -24,7 +24,7 @@ const UserSchema = mongoose.Schema({
    },
    contact:{
       type: String,
-      require: true
+      require: false
    }
 });
 

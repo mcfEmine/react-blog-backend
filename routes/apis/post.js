@@ -7,7 +7,7 @@ const {userById} = require('../../controllers/user');
 
 const router = express.Router();
 //--------------------------------------------
-router.get('/allPosts', passport.authenticate('jwt', {session:false}), getPosts);
+router.get('/posts', passport.authenticate('jwt', {session:false}), getPosts);
 
 router.get("/posts/by/:userId", passport.authenticate('jwt', {session:false}), postsByUser);
 //----------------------CREATE POST-------------------------

@@ -15,7 +15,7 @@ exports.login = (req, res) => {
         if(!user) {
             return res.json ({
                 success: false,
-                message: "User mevcut değil!"
+                message: "Kullanıcı tanımlı değildir. Lütfen kayıt olunuz."
             });
         }
             // user exist!
@@ -38,12 +38,13 @@ exports.login = (req, res) => {
                     );
                     return res.json({
                         success : true,
-                        token : "JWT" + token 
+                        token : "jwt " + token,
+                        user:user
                     });
                 } else {
                     return res.json({
-                        success : true,
-                        message: "Password yanlış!"
+                        success : false,
+                        message: "Kullanıcı adı ve password eşleşmedi !"
                     });
                 }
     });
@@ -58,8 +59,8 @@ exports.registerProfile = (req, res) => {
     User.addUser(newUser, (err, user) => {
     if(err) {
         let message = ""
-        if(err.errors.username) message= "Username önceden var! ";
-        if(err.errors.email) message += " Email önceden var! ";
+        if(err.errors.username) message= "Kullanıcı daha önceden yaratılmıştır ! ";
+        if(err.errors.email) message += " Email daha önceden kullanılmıştır ! ";
         return res.json({
             success: false,
             message
@@ -67,7 +68,7 @@ exports.registerProfile = (req, res) => {
     } else{
         return res.json( {
             success: true,
-            message: "User register ok!"
+            message: "Kullanıcı başarıyla kaydedilmiştir !"
         })
     }
 });
