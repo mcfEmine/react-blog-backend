@@ -1,5 +1,6 @@
 const User = require('../models/user');
 const _ = require('lodash'); 
+const bcrypt = require('bcryptjs');
 //---------------------------------------
 exports.userById = (req, res, next, id ) => {
     
@@ -14,7 +15,7 @@ exports.userById = (req, res, next, id ) => {
     next();
 })
 };
-
+//--------------------------------------------------------------
 exports.getAllUsers = (req, res) => {
     const user = User.find()
        .select("_id name email username contact")
@@ -24,15 +25,22 @@ exports.getAllUsers = (req, res) => {
     .catch(err=> console.log(err));
 };
 
-// 
+// --------------------------------------------------------------
 exports.getUser = (req, res) => {
     req.password=undefined;
     return res.json(req.profile);
 }
-//
+//-----------------------------------------------------------------
 exports.updateUser = (req, res, next) => {
     let user = req.profile
     user=_.extend(user, req.body)
+    bcrypt.genSalt(10,(err, salt)=> {
+        bcrypt.hash(user.password, salt, (err, hash) => {
+            if(err) throw err;
+            user.password=hash;
+            
+        });
+    });
     user.update = Date.now()
     user.save((err) => {
         if(err) {
