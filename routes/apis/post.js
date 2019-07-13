@@ -1,7 +1,7 @@
 const express = require('express');
 const passport = require('passport');
 //------------------------------------------------------------
-const validator = require('../../validator');
+const validator = require('../../validator/index');
 const {getPosts, createPost, postsByUser, updatePost,deletePost, postById,isPoster} = require('../../controllers/post');
 const {userById} = require('../../controllers/user');
 
@@ -12,7 +12,7 @@ router.get('/posts', passport.authenticate('jwt', {session:false}), getPosts);
 router.get("/posts/by/:userId", passport.authenticate('jwt', {session:false}), postsByUser);
 //----------------------CREATE POST-------------------------
 router.post('/post/new/:userId', passport.authenticate('jwt', {session:false}), 
-createPost,validator.createPostValid, ); // for token pass the userId
+createPost,validator.createPostValid ); // for token pass the userId
 //----------------------UPDATE POST-------------------
 router.put('/post/:postId', passport.authenticate('jwt', {session:false}), isPoster,updatePost);
 //-----------------------DELETE POST---------------------------

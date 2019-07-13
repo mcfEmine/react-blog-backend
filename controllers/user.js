@@ -3,17 +3,18 @@ const _ = require('lodash');
 const bcrypt = require('bcryptjs');
 //---------------------------------------
 exports.userById = (req, res, next, id ) => {
-    
-    User.findById(id).exec((err,user) => {
-        
+    User.findById(id)
+    .populate('following', '_id name')
+    .populate('followers', '_id name')
+    .exec((err,user) => {
         if(err || !user) {
             return res.status(400).json({
-            error : "User mevcut değil!"
+            error : "Kullanıcı bulunamadı !"
         })
     }
-    req.profile = user
-    next();
-})
+        req.profile = user
+        next();
+    })
 };
 //--------------------------------------------------------------
 exports.getAllUsers = (req, res) => {
@@ -34,25 +35,17 @@ exports.getUser = (req, res) => {
 exports.updateUser = (req, res, next) => {
     let user = req.profile
     user=_.extend(user, req.body)
-    bcrypt.genSalt(10,(err, salt)=> {
-        bcrypt.hash(user.password, salt, (err, hash) => {
-            if(err) throw err;
-            user.password=hash;
-            
-        });
-    });
-    user.update = Date.now()
+    //user.update = Date.now()
     user.save((err) => {
         if(err) {
-            return res.json({
-                error: err
+            return res.status(400).json({
+                error: "Bu işlemi yapmaya yetkili değilsiniz!"
             })
         }
-        req.profile.password = undefined
+        
         res.json({user})
     })
-    }
-
+   }
 //-------------------------------------------
 exports.deleteUser = (req, res, next) => {
     let user  = req.profile;
@@ -65,3 +58,68 @@ exports.deleteUser = (req, res, next) => {
         res.json({message: "User başarıyla silindi!"})
     })
     }
+//------------------------------------------------------------------------------
+
+// log in user -> req.body.userId
+exports.addFollowing = (req, res, next) => {
+
+    User.findByIdAndUpdate(req.body.userId, 
+                            {$push:{following:req.body.followId}}, 
+                            (err,result) => {
+        if(err) {
+            return res.status(400).json({
+                error:err
+            });
+        }
+        next();
+    }) 
+
+}
+//--------------------------------------------------------------------------------
+exports.addFollower = (req, res) => {
+    User.findByIdAndUpdate(req.body.followId, {$push:{followers:req.body.userId}},
+        {new:true}
+    ).populate('following', '_id name')
+    .populate('followers', '_id name')
+    .exec((err, result) => {
+        if(err) {
+            return res.status(400).json({
+                error:err
+            })
+        }
+
+        result.password = undefined;
+        res.json(result);
+    } )
+
+};
+
+exports.removeFollowing = (req, res, next) => {
+    User.findByIdAndUpdate(req.body.userId, {$pull:{following:req.body.unfollowId}}, (err,result) => {
+    if(err) {
+        return res.status(400).json({
+            error:err
+        });
+    }
+    next();
+}) 
+
+}
+//--------------------------------------------------------------------------------
+exports.removeFollower = (req, res) => {
+    User.findByIdAndUpdate(req.body.unfollowId, {$pull:{followers:req.body.userId}},
+    {new:true}
+    ).populate('following', '_id name')
+    .populate('followers', '_id name')
+    .exec((err, result) => {
+    if(err) {
+        return res.status(400).json({
+            error:err
+        })
+    }
+
+    result.password = undefined;
+    res.json(result);
+} )
+
+};
