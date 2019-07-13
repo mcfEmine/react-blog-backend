@@ -15,7 +15,7 @@ exports.login = (req, res) => {
         if(!user) {
             return res.json ({
                 success: false,
-                message: "Kullanıcı tanımlı değildir. Lütfen kayıt olunuz."
+                message: "Kullanıcı tanımlı değildir. Lütfen üye olunuz."
             });
         }
             // user exist!
