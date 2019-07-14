@@ -3,14 +3,11 @@ const jwt =require('jsonwebtoken');
 const config = require('../config/db')
 const passport = require('passport');
 
-//------------------------------------LOGIN-----------------------------------------
-exports.login = (req, res) => {
+//------------------------------------sign in-----------------------------------------
+exports.signin = (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
-
-    User.getUserByUserName(username, (err, user) => {
-       
-
+       User.getUserByUserName(username, (err, user) => {
         if(err) throw err;
         if(!user) {
             return res.json ({
@@ -25,17 +22,9 @@ exports.login = (req, res) => {
             if(isMatch) {
                 const token = jwt.sign({
                       type: "user",
-                      data : {         // payload data  verify signature HMACSHA256
-                          _id: user._id,
-                          username : user.username,
-                          name: user.name,
-                          email : user.email,
-                          contact : user.contact
-                        }
-                        }, config.secret, {
-                            expiresIn: 604800 // 1 week - miliseconds
-                         }
-                    );
+                      data : { _id: user._id,username : user.username }
+                        }, config.secret, {expiresIn: 604800 } );
+                        
                     return res.json({
                         success : true,
                         token : "jwt " + token,
@@ -53,14 +42,13 @@ exports.login = (req, res) => {
 });
 }
 //----------------------------------SIGN UP----------------------------------------------------
-
-exports.registerProfile = (req, res) => {
+exports.signup = (req, res) => {
     let newUser = new User(req.body);
     User.addUser(newUser, (err, user) => {
     if(err) {
         let message = ""
-        if(err.errors.username) message= "Kullanıcı daha önceden yaratılmıştır ! ";
-        if(err.errors.email) message += " Email daha önceden kullanılmıştır ! ";
+        if(err.errors.username) message= "Bu username daha önceden kullanılmıştır. ! ";
+        if(err.errors.email) message += " Bu e_posta daha önceden kullanılmıştır ! ";
         return res.json({
             success: false,
             message
@@ -74,3 +62,8 @@ exports.registerProfile = (req, res) => {
 });
 };
 //-----------------------------------------------------------------
+
+
+
+
+

@@ -121,5 +121,26 @@ exports.removeFollower = (req, res) => {
     result.password = undefined;
     res.json(result);
 } )
-
 };
+//-------------------------------------------------------------------------------------
+exports.findPeople = (req, res) => {
+    console.log("fin people geldi...");
+    let following = req.profile.following
+    
+    console.log("following " , following);
+    console.log("profile user id  " , req.profile._id);
+
+    following.push(req.profile._id)
+    // user id si hariç
+    User.find({_id: {$nin: following}}, (err, users) => {
+        if(err) {
+            return res.status(400).json({
+                error:err
+            })
+        }
+        else{
+            res.json(users)
+        }
+    } ) .select ('name');
+
+}

@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const uniqueValidator = require('mongoose-unique-Validator');
+const {ObjectId} = require = mongoose.Schema
 //----------------------------------------------------------
 const UserSchema = mongoose.Schema({
    name:{
@@ -25,7 +26,9 @@ const UserSchema = mongoose.Schema({
    contact:{
       type: String,
       require: false
-   }
+   },
+   following:[{type:ObjectId, ref:"User"}],
+   followers:[{type:ObjectId, ref:"User"}]
 });
 
 const User= module.exports = mongoose.model('User', UserSchema);
@@ -41,6 +44,7 @@ module.exports.getUserByUserName = function(username, callback) {
     }
     User.findOne(query, callback);
 }
+//--------------------------------------------------------------
 module.exports.addUser = function(newUser, callback) {
     bcrypt.genSalt(10,(err, salt)=> {
         bcrypt.hash(newUser.password, salt, (err, hash) => {
@@ -50,6 +54,7 @@ module.exports.addUser = function(newUser, callback) {
         });
     });
 }
+//--------------------------------------------------------------------
 module.exports.comparePassword = function(password, hash, callback) {
     bcrypt.compare(password, hash, (err, isMatch) => {
         if(err) throw err;

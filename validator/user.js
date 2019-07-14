@@ -19,10 +19,7 @@ module.exports.createUserValid= (req,res, next) => {
     });
 
     req.check("email", "E_posta, girilmelidir !").notEmpty();
-    req.check("email", "E_posta, 5-20 karakter arasinda olmalıdır!").isLength({
-        min:5,
-        max:20
-    });
+    
 
 
     const errors = req.validationErrors();
