@@ -30,22 +30,17 @@ exports.getPosts = (req,res) => {
 exports.createPost = (req, res) => {
     let form = new formidable.IncomingForm()
     form.keepExtensions = true
-    const post = new Post(req.body);
-    
     form.parse(req, (err, fields, files) => {
-        if(err) {
-            return res.status(400).json({
-                error: "Image upload edilemedi!"
-            })
-        }
+         if(err) {
+             return res.status(400).json({
+                 error: "Image upload edilemedi!"
+             })
+         }
         let post = new Post(fields);
-        req.profile.password = undefined;
+        console.log(" post -> " , post)
         post.postedBy = req.profile;
         //console.log("profile check",req.profile);
-        if(files.photo) {
-            post.photo.data = fileSystem.readFileSync(files.photo.path)
-            post.photo.contenType =  files.photo.type
-        }
+        
         post.save( (err, result) => {
                if(err) {
                    return res.status(400).json({
