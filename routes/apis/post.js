@@ -2,17 +2,19 @@ const express = require('express');
 const passport = require('passport');
 //------------------------------------------------------------
 const validator = require('../../validator/index');
-const {getPosts, createPost, postsByUser, updatePost,deletePost, postById,isPoster} = require('../../controllers/post');
+const {getPosts, createPost, postsByUser, 
+        updatePost,deletePost, postById,isPoster, singlePost} = require('../../controllers/post');
 const {userById} = require('../../controllers/user');
 
 const router = express.Router();
 //--------------------------------------------
-router.get('/posts', passport.authenticate('jwt', {session:false}), getPosts);
+router.get('/posts', getPosts);
 
 router.get("/posts/by/:userId", passport.authenticate('jwt', {session:false}), postsByUser);
-//----------------------CREATE POST-------------------------
-router.post('/post/new/:userId', passport.authenticate('jwt', {session:false}), 
-createPost,validator.createPostValid ); // for token pass the userId
+//----------------------------SINGLE POST-------------------------------------------------
+router.get('/post/:postId', singlePost);
+//----------------------CREATE POST--------------------------------------------------------
+router.post('/post/new/:userId', passport.authenticate('jwt', {session:false}), createPost); 
 //----------------------UPDATE POST-------------------
 router.put('/post/:postId', passport.authenticate('jwt', {session:false}), isPoster,updatePost);
 //-----------------------DELETE POST---------------------------

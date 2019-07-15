@@ -14,13 +14,14 @@ const PostSchema  = new mongoose.Schema({
       type:Date,
       default:Date.now
    },
-   photo: {
-      data: Buffer, 
-      contenType: String
-   },
    postedBy: {
       type: ObjectId,
       ref: "User"
+   },
+   chkPrivate : {
+      type: Boolean,
+      required:false,
+      default:false
    }
 })
 

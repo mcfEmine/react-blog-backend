@@ -124,12 +124,7 @@ exports.removeFollower = (req, res) => {
 };
 //-------------------------------------------------------------------------------------
 exports.findPeople = (req, res) => {
-    console.log("fin people geldi...");
     let following = req.profile.following
-    
-    console.log("following " , following);
-    console.log("profile user id  " , req.profile._id);
-
     following.push(req.profile._id)
     // user id si hariç
     User.find({_id: {$nin: following}}, (err, users) => {

@@ -17,46 +17,28 @@ exports.postById = (req, res, next, id) => {
         next()
     })
 }
-//-----------------------------------------------------------------------
+//---------------------------------------------------------------PRIVATE EKLEDİM-
 exports.getPosts = (req,res) => {
-    const posts = Post.find().populate("postedBy", "_id name")
-       .select("_id title body")
+      const posts = Post.find( {chkPrivate: {$in: false}} )
+       .populate("postedBy", "_id name")
+       .select("_id title body created private")
+       .sort({created:-1}) // get latest
        .then((posts) => {
-        res.status(200).json({posts});
+        res.status(200).json(posts); // array
     })
     .catch(err=> console.log(err));
 };
-//---------------------------------------------------------
-exports.createPost = (req, res) => {
-    let form = new formidable.IncomingForm()
-    form.keepExtensions = true
-    form.parse(req, (err, fields, files) => {
-         if(err) {
-             return res.status(400).json({
-                 error: "Image upload edilemedi!"
-             })
-         }
-        let post = new Post(fields);
-        console.log(" post -> " , post)
-        post.postedBy = req.profile;
-        //console.log("profile check",req.profile);
-        
-        post.save( (err, result) => {
-               if(err) {
-                   return res.status(400).json({
-                       error: err
-                   })
-               } 
-               res.json(result)
-        })
-    })
-};
-
 //--------------------- --------------posted (user) by who?
 // succ _> posts
 // err handle
+//, {chkPrivate: {$nin: true}}
+
 exports.postsByUser = (req, res)=> {
-    Post.find({postedBy: req.profile._id})
+    
+    console.log(" headers --> ", req.headers.authorization);
+    
+
+    Post.find({ postedBy: req.profile._id, chkPrivate:false})
     .populate("postedBy", "id name")
     .sort("_created")
     .exec((err, posts) => {
@@ -70,6 +52,17 @@ exports.postsByUser = (req, res)=> {
     })
 
 }
+//---------------------------------------------------------
+exports.createPost = (req, res) => {
+    let newPost = new Post(req.body);
+    newPost.postedBy = req.profile;
+     newPost.save( (err, result) => {
+                if(err) {return res.status(400).json({error: err})} 
+                res.json(result)
+         })
+   
+};
+
 
 
 //-------------------------------------------------------------------------
@@ -113,4 +106,8 @@ exports.updatePost = (req,res) => {
     }
 
     next();
+}
+//------------------------------------------------------
+exports.singlePost = (req, res ) => {
+    return res.json(req.post);
 }
