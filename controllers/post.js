@@ -1,8 +1,7 @@
 const Post = require('../models/post');
-const formidable = require('formidable');
-const fileSystem = require('fs');
 const _ = require('lodash'); 
-  
+const jwt = require('jsonwebtoken');
+const config = require('../config/db');
 //------------------------------------------------------------------------
 exports.postById = (req, res, next, id) => {
     Post.findById(id)
@@ -17,31 +16,56 @@ exports.postById = (req, res, next, id) => {
         next()
     })
 }
-//---------------------------------------------------------------PRIVATE EKLEDİM-
+//-------------------------------------------------------------------------
 exports.getPosts = (req,res) => {
-      const posts = Post.find( {chkPrivate: {$in: false}} )
+        const token = req.headers.authorization;
+        if(token === 'undefined' ) {
+        const posts = Post.find(  {chkPrivate: false}  )
        .populate("postedBy", "_id name")
-       .select("_id title body created private")
+       .select("_id title body created chkPrivate")
        .sort({created:-1}) // get latest
        .then((posts) => {
         res.status(200).json(posts); // array
     })
+        }
+        else{
+            const token = (req.headers.authorization).split(" ")[1];
+            const userId = getUserIdFromToken(token);
+            const posts = Post.find( { $or:[ {chkPrivate: true, postedBy: userId}, {chkPrivate: false}  ]} )
+            .populate("postedBy", "_id name")
+            .select("_id title body created chkPrivate")
+            .sort({created:-1}) // get latest
+            .then((posts) => {
+            res.status(200).json(posts); // array
+    })
     .catch(err=> console.log(err));
+    }
+        
 };
 //--------------------- --------------posted (user) by who?
-// succ _> posts
-// err handle
-//, {chkPrivate: {$nin: true}}
-
 exports.postsByUser = (req, res)=> {
-    
-    console.log(" headers --> ", req.headers.authorization);
-    
+    const token = req.headers.authorization.split(" ")[1];
+    const userId = getUserIdFromToken(token);
 
-    Post.find({ postedBy: req.profile._id, chkPrivate:false})
-    .populate("postedBy", "id name")
-    .sort("_created")
-    .exec((err, posts) => {
+    if(userId === req.profile._id.toString()) {
+            Post.find({ postedBy: req.profile._id})
+            .populate("postedBy", "id name")
+            .sort("_created")
+            .exec((err, posts) => {
+            if(err) {
+                return res.status(400).json({
+                    error:err
+                })
+            }
+            // no  error
+            res.json(posts);
+        })
+    }
+    else{
+        Post.find({ postedBy: req.profile._id, chkPrivate:false})
+        .populate("postedBy", "id name")
+        .sort("_created")
+         .exec((err, posts) => {
         if(err) {
             return res.status(400).json({
                 error:err
@@ -51,6 +75,8 @@ exports.postsByUser = (req, res)=> {
         res.json(posts);
     })
 
+    }
+    
 }
 //---------------------------------------------------------
 exports.createPost = (req, res) => {
@@ -62,8 +88,6 @@ exports.createPost = (req, res) => {
          })
    
 };
-
-
 
 //-------------------------------------------------------------------------
 exports.deletePost = (req, res) => {
@@ -110,4 +134,15 @@ exports.updatePost = (req,res) => {
 //------------------------------------------------------
 exports.singlePost = (req, res ) => {
     return res.json(req.post);
+}
+//--------------------------------------------------------------
+const userIdT = getUserIdFromToken = (token) => {
+    try{
+        const decodeToken = jwt.verify(token, config.secret);
+        return decodeToken.data._id;
+
+    }catch(error) {
+        console.log(error);
+    }
+    return "";
 }

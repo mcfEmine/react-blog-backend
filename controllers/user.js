@@ -1,6 +1,6 @@
 const User = require('../models/user');
 const _ = require('lodash'); 
-const bcrypt = require('bcryptjs');
+
 //---------------------------------------
 exports.userById = (req, res, next, id ) => {
     User.findById(id)
@@ -127,7 +127,7 @@ exports.findPeople = (req, res) => {
     let following = req.profile.following
     following.push(req.profile._id)
     // user id si hariç
-    User.find({_id: {$nin: following}}, (err, users) => {
+    User.find({ _id: {$nin: following}   }, (err, users) => {
         if(err) {
             return res.status(400).json({
                 error:err
@@ -139,3 +139,4 @@ exports.findPeople = (req, res) => {
     } ) .select ('name');
 
 }
+
